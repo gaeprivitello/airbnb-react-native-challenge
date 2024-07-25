@@ -1,0 +1,18 @@
+query listingsPageQuery($input: PageQueryInput) {
+  listingsPage: restaurantsPage(input: $input) {
+    _id
+    address {
+      street
+    }
+    guests_included
+    bathrooms
+    bedrooms
+    beds
+    images {
+      thumbnail_url
+    }
+    last_scraped
+    listing_url
+    price
+  }
+}
