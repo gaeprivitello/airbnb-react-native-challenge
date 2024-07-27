@@ -3,6 +3,9 @@ import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import MediaCard from './MediaCard';
 import { Colors } from '@/constants/Colors';
+import { useListingContext } from '@/hooks/useListingContext';
+import { formatPrice } from '@/utils/currency';
+import { formatDateToCustomString } from '@/utils/date';
 
 interface ListingCardProps {
   listing: Listing;
@@ -15,6 +18,12 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
     price,
     last_scraped,
   } = listing;
+
+  const { setSelectedListing } = useListingContext();
+
+  const handlePress = () => {
+    setSelectedListing(listing._id);
+  };
 
   const getListingDetails = (listing: Listing) => {
     let items = [];
@@ -34,22 +43,6 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
     }
 
     return items.join(' / ');
-  };
-
-  const formatPrice = (numberDecimal: string): string => {
-    const priceInThousands = parseFloat(numberDecimal) * 1000;
-
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(priceInThousands);
-  };
-
-  const formatDateToCustomString = (date: Date): string => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
   };
 
   const renderDescription = () => {
@@ -75,15 +68,11 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
     );
   };
 
-  const handlePress = () => {
-    console.log('Pressed');
-  };
-
-  // const description = useMemo(() => renderDescription(), [listing]);
+  const description = useMemo(() => renderDescription(), [listing]);
 
   return (
     <Pressable onPress={handlePress} style={styles.container}>
-      <MediaCard imageUrl={listing.images.picture_url} content={renderDescription()} />
+      <MediaCard imageUrl={listing.images.picture_url} content={description} />
     </Pressable>
   );
 };

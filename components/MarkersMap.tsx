@@ -1,13 +1,17 @@
 import { useEffect, useRef } from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE, Region } from 'react-native-maps';
 import { ThemedView } from '@/components/ThemedView';
 import MarkerIcon from '@/assets/icons/Marker';
+import { MarkerPoint } from '@/types/marker-point';
+import { useListingContext } from '@/hooks/useListingContext';
+import ListingMarker from './MarkerLabel';
+import { formatPrice } from '@/utils/currency';
 
-interface MarkerPoint {
-  lat: number;
-  lng: number;
-}
+const defaultMapZoom = {
+  latitudeDelta: 0.004,
+  longitudeDelta: 0.004,
+};
 
 type MarkersMapProps = {
   markers?: MarkerPoint[];
@@ -22,7 +26,8 @@ const defaultRegion: Region = {
 
 export default function MarkersMap({ markers = [] }: MarkersMapProps) {
   const mapRef = useRef<MapView>(null);
-  const initRef = useRef(false);
+
+  const { selectedListing, setSelectedListing } = useListingContext();
 
   useEffect(() => {
     if (markers.length === 0 || !mapRef.current) {
@@ -36,17 +41,32 @@ export default function MarkersMap({ markers = [] }: MarkersMapProps) {
         animated: true,
       }
     );
-
-    initRef.current = true;
   }, [markers, mapRef.current]);
 
-  const handlePress = (point: MarkerPoint) => {
+  useEffect(() => {
+    if (selectedListing) {
+      mapRef.current?.animateToRegion(
+        {
+          latitude: selectedListing.address.location.coordinates[1],
+          longitude: selectedListing.address.location.coordinates[0],
+          ...defaultMapZoom,
+        },
+        600
+      );
+    }
+  }, [selectedListing]);
+
+  const handleMarkerPress = (point: MarkerPoint) => {
+    setSelectedListing(point.id);
+    animateToMarker(point);
+  };
+
+  const animateToMarker = (point: MarkerPoint) => {
     mapRef.current?.animateToRegion(
       {
         latitude: point.lat,
         longitude: point.lng,
-        latitudeDelta: 0.004,
-        longitudeDelta: 0.004,
+        ...defaultMapZoom,
       },
       500
     );
@@ -62,13 +82,16 @@ export default function MarkersMap({ markers = [] }: MarkersMapProps) {
       >
         {markers.map((marker, index) => (
           <Marker
-            onPress={() => handlePress(marker)}
+            onPress={() => handleMarkerPress(marker)}
             key={index}
             coordinate={{
               latitude: marker.lat,
               longitude: marker.lng,
             }}
           >
+            {selectedListing?._id === marker.id && (
+              <ListingMarker label={`${[formatPrice(selectedListing?.price.$numberDecimal)]}`} />
+            )}
             <MarkerIcon />
           </Marker>
         ))}

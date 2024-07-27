@@ -1,16 +1,11 @@
-import { Listing } from '@/types/listing';
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 
 interface MediaCardProps {
   imageUrl: string;
-
   content: React.ReactNode;
 }
 
-/**
- * TODO: This component needs to be extended in order to show the full information of a given listing
- */
 const MediaCard: React.FC<MediaCardProps> = ({ imageUrl, content }) => {
   const [isError, setIsError] = useState(false);
 
