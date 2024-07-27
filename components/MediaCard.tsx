@@ -3,13 +3,15 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 interface MediaCardProps {
-  listing: Listing;
+  imageUrl: string;
+
+  content: React.ReactNode;
 }
 
 /**
  * TODO: This component needs to be extended in order to show the full information of a given listing
  */
-const MediaCard: React.FC<MediaCardProps> = ({ listing }) => {
+const MediaCard: React.FC<MediaCardProps> = ({ imageUrl, content }) => {
   const [isError, setIsError] = useState(false);
 
   const handleImageError = () => {
@@ -18,30 +20,25 @@ const MediaCard: React.FC<MediaCardProps> = ({ listing }) => {
 
   return (
     <View style={styles.card}>
-      <Image 
+      <Image
         style={styles.image}
-        source={isError 
-          ? require('../assets/images/default-prop-img.jpeg')
-          : { uri: listing.images.picture_url }
-        }
+        source={isError ? require('../assets/images/default-prop-img.jpeg') : { uri: imageUrl }}
         onError={handleImageError}
       />
-      <View>
-        <Text>{listing.address.street}</Text>
-      </View>
+      {content}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    // TODO: Implement this
+    flexDirection: 'row',
   },
   image: {
-    width: 30,
-    height: 30,
+    width: 64,
+    height: '100%',
+    borderRadius: 4,
   },
 });
 
 export default MediaCard;
-

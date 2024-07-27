@@ -1,8 +1,9 @@
 export interface Address {
   street: string;
+  suburb: string;
   location: {
-    coordinates: number[]
-  }
+    coordinates: number[];
+  };
   __typename: string;
 }
 
@@ -25,6 +26,7 @@ export interface Images {
 
 export interface Listing {
   _id: string;
+  name: string;
   address: Address;
   guests_included: GuestsIncluded;
   bathrooms: Bathrooms;

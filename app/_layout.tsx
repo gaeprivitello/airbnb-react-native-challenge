@@ -7,9 +7,14 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import ApolloProvider from '@/lib/graphql/apollo';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const headerNull = {
+  header: () => null,
+};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -27,13 +32,17 @@ export default function RootLayout() {
     return null;
   }
 
+  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+
   return (
     <ApolloProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="home" />
-          <Stack.Screen name="+not-found" />
-        </Stack>
+      <ThemeProvider value={theme}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+          <Stack screenOptions={headerNull}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </SafeAreaView>
       </ThemeProvider>
     </ApolloProvider>
   );
