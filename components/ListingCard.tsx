@@ -1,17 +1,18 @@
-import { Listing } from '@/types/listing';
-import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo, useEffect, useRef } from 'react';
+import { Pressable, StyleSheet, Text, View, Animated } from 'react-native';
 import MediaCard from './MediaCard';
 import { Colors } from '@/constants/Colors';
-import { useListingContext } from '@/hooks/useListingContext';
 import { formatPrice } from '@/utils/currency';
 import { formatDateToCustomString } from '@/utils/date';
+import { Listing } from '@/types/listing';
 
 interface ListingCardProps {
   listing: Listing;
+  selected?: boolean;
+  onPress?: () => void;
 }
 
-const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
+const ListingCard: React.FC<ListingCardProps> = ({ listing, onPress, selected = false }) => {
   const {
     name,
     address: { street },
@@ -19,11 +20,30 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
     last_scraped,
   } = listing;
 
-  const { setSelectedListing } = useListingContext();
+  const opacity = useRef(new Animated.Value(1)).current;
 
-  const handlePress = () => {
-    setSelectedListing(listing._id);
-  };
+  useEffect(() => {
+    if (selected) {
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 0.3,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [selected]);
 
   const getListingDetails = (listing: Listing) => {
     let items = [];
@@ -71,8 +91,10 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
   const description = useMemo(() => renderDescription(), [listing]);
 
   return (
-    <Pressable onPress={handlePress} style={styles.container}>
-      <MediaCard imageUrl={listing.images.picture_url} content={description} />
+    <Pressable onPress={onPress}>
+      <Animated.View style={[styles.container, { opacity }]}>
+        <MediaCard imageUrl={listing.images.picture_url} content={description} />
+      </Animated.View>
     </Pressable>
   );
 };
