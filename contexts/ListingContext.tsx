@@ -8,7 +8,7 @@ enum ActionType {
 
 type Action =
   | { type: ActionType.ADD_LISTINGS; listings: Listing[] }
-  | { type: ActionType.SET_SELECTED_LISTING; listingId: string };
+  | { type: ActionType.SET_SELECTED_LISTING; listingId: string | null };
 
 interface State {
   listings: { [key: string]: Listing };
@@ -37,7 +37,7 @@ const listingReducer = (state: State, action: Action): State => {
     case ActionType.SET_SELECTED_LISTING:
       return {
         ...state,
-        selectedListing: state.listings[action.listingId],
+        selectedListing: action.listingId ? state.listings[action.listingId] : undefined,
       };
     default:
       return state;
@@ -48,7 +48,7 @@ interface ListingContextType {
   selectedListing?: Listing;
   listings: { [key: string]: Listing };
   addListings: (listings: Listing[]) => void;
-  setSelectedListing: (listingId: string) => void;
+  setSelectedListing: (listingId: string | null) => void;
 }
 
 export const ListingContext = createContext<ListingContextType | undefined>(undefined);
@@ -60,7 +60,7 @@ export const ListingProvider = ({ children }: { children: ReactNode }) => {
     dispatch({ type: ActionType.ADD_LISTINGS, listings });
   };
 
-  const setSelectedListing = (listingId: string) => {
+  const setSelectedListing = (listingId: string | null) => {
     dispatch({ type: ActionType.SET_SELECTED_LISTING, listingId });
   };
 

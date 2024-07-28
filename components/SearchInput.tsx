@@ -1,6 +1,7 @@
 import SearchIcon from '@/assets/icons/Search';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
+import { debounce } from 'lodash';
 
 interface SearchInputProps {
   search: string;
@@ -10,15 +11,18 @@ interface SearchInputProps {
 const SearchInput: React.FC<SearchInputProps> = ({ search, setSearch }) => {
   const [innerSearch, setInnerSearch] = useState(search);
 
-  useEffect(() => {
-    const debounceHandler = setTimeout(() => {
-      setSearch(innerSearch);
-    }, 500);
+  const debouncedSearch = useMemo(
+    () => debounce((value: string) => setSearch(value), 500),
+    [setSearch]
+  );
 
-    return () => {
-      clearTimeout(debounceHandler);
-    };
-  }, [innerSearch, setSearch]);
+  const handleSearch = useCallback(
+    (value: string) => {
+      setInnerSearch(value);
+      debouncedSearch(value);
+    },
+    [debouncedSearch]
+  );
 
   return (
     <View style={styles.container}>
@@ -27,7 +31,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ search, setSearch }) => {
         placeholder="Search address, city, state, zip code"
         placeholderTextColor={'#6A6A6A'}
         value={innerSearch}
-        onChangeText={setInnerSearch}
+        onChangeText={handleSearch}
       />
       <SearchIcon />
     </View>

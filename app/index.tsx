@@ -7,7 +7,6 @@ import ListingCard from '@/components/ListingCard';
 import SearchInput from '@/components/SearchInput';
 import useListingMarkers from '@/hooks/useListingMarkers';
 import { useListingContext } from '@/hooks/useListingContext';
-import ListingModal from '@/components/ListingModal';
 
 export default function Home() {
   const [search, setSearch] = useState('');
@@ -18,8 +17,14 @@ export default function Home() {
 
   useEffect(() => {
     if (selectedListing) {
+      const selectedIndex = listings.findIndex((item) => item._id === selectedListing._id);
+
+      if (selectedIndex === -1) {
+        setSelectedListing(null);
+      }
+
       flatListRef.current?.scrollToIndex({
-        index: listings.findIndex((item) => item._id === selectedListing._id),
+        index: selectedIndex,
         animated: true,
       });
     }
@@ -49,7 +54,7 @@ export default function Home() {
             />
           )}
           onEndReached={loadMore}
-          onEndReachedThreshold={0.25}
+          onEndReachedThreshold={0.4}
         />
       )}
     </HomeLayoutProps>

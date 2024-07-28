@@ -72,7 +72,9 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onPress, selected = 
 
     return (
       <View style={styles.contentContainer}>
-        <Text style={styles.name}>{name}</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.name}>
+          {name}
+        </Text>
         <View style={styles.descriptionContainer}>
           <View style={styles.detailsContainer}>
             <Text style={styles.price}>{formattedPrice}</Text>
@@ -105,6 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   contentContainer: {
+    flex: 1,
     marginLeft: 8,
   },
   name: {
