@@ -70,6 +70,9 @@ export default function Home() {
         maxToRenderPerBatch={10}
         windowSize={15}
         removeClippedSubviews={true}
+        onScrollToIndexFailed={(error) => {
+          console.log('error', error);
+        }}
       />
 
       {loadingMore && <ActivityIndicator size="small" color="#0000ff" />}
