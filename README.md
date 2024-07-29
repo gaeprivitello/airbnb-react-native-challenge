@@ -15,7 +15,7 @@ Develop a map screen displaying a list of properties in New York City, similar t
    npm install
    ```
 
-2. Replace the `GOOGLE_MAPS_API_KEY` by an actual Google Maps IOS Key
+2. Replace the `GOOGLE_MAPS_API_KEY` by an actual Google Maps IOS Key on app.json config file
 
 3. Set up the `.env` file based on `.env.sample`
 
