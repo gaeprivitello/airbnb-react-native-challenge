@@ -3,10 +3,12 @@ import { View, Image, StyleSheet } from 'react-native';
 
 interface MediaCardProps {
   imageUrl: string;
-  content: React.ReactNode;
+  title: React.ReactNode;
+  body: React.ReactNode;
+  footer: React.ReactNode;
 }
 
-const MediaCard: React.FC<MediaCardProps> = ({ imageUrl, content }) => {
+const MediaCard: React.FC<MediaCardProps> = ({ imageUrl, title, body, footer }) => {
   const [isError, setIsError] = useState(false);
 
   const handleImageError = () => {
@@ -20,7 +22,11 @@ const MediaCard: React.FC<MediaCardProps> = ({ imageUrl, content }) => {
         source={isError ? require('../assets/images/default-prop-img.jpeg') : { uri: imageUrl }}
         onError={handleImageError}
       />
-      {content}
+      <View style={styles.container}>
+        <View>{title}</View>
+        <View>{body}</View>
+        <View>{footer}</View>
+      </View>
     </View>
   );
 };
@@ -33,6 +39,11 @@ const styles = StyleSheet.create({
     width: 64,
     height: '100%',
     borderRadius: 4,
+  },
+  container: {
+    flex: 1,
+    gap: 8,
+    marginLeft: 8,
   },
 });
 

@@ -9,6 +9,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import ApolloProvider from '@/lib/graphql/apollo';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ListingProvider } from '@/contexts/ListingContext';
+import { StatusBar } from 'expo-status-bar';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -19,6 +20,7 @@ const headerNull = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -37,9 +39,10 @@ export default function RootLayout() {
 
   return (
     <ApolloProvider>
+      <StatusBar style="dark" />
       <ThemeProvider value={theme}>
         <ListingProvider>
-          <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+          <SafeAreaView style={{ flex: 1 }}>
             <Stack screenOptions={headerNull}>
               <Stack.Screen name="index" />
               <Stack.Screen name="+not-found" />

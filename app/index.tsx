@@ -1,19 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
-import { FlatList, ActivityIndicator, View } from 'react-native';
-
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { FlatList, ActivityIndicator, View, StyleSheet } from 'react-native';
 import HomeLayoutProps from '@/components/HomeLayoutProps';
 import MarkersMap from '@/components/MarkersMap';
 import ListingCard from '@/components/ListingCard';
 import SearchInput from '@/components/SearchInput';
-import useListingMarkers from '@/hooks/useListingMarkers';
-import { useListingContext } from '@/hooks/useListingContext';
+import useListings from '@/hooks/useListings';
+import { debounce } from 'lodash';
 
 export default function Home() {
   const [search, setSearch] = useState('');
   const flatListRef = useRef<FlatList>(null);
 
-  const { loading, listings, markers, loadMore } = useListingMarkers(search);
-  const { selectedListing, setSelectedListing } = useListingContext();
+  const { loading, loadingMore, listings, markers, selectedListing, setSelectedListing, loadMore } =
+    useListings(search);
 
   useEffect(() => {
     if (selectedListing) {
@@ -21,6 +20,7 @@ export default function Home() {
 
       if (selectedIndex === -1) {
         setSelectedListing(null);
+        return;
       }
 
       flatListRef.current?.scrollToIndex({
@@ -29,6 +29,17 @@ export default function Home() {
       });
     }
   }, [selectedListing]);
+
+  const handleFetchMore = useCallback(() => {
+    if (loading || loadingMore) {
+      return;
+    }
+    loadMore(listings.length);
+  }, [loading, loadingMore, loadMore, listings.length]);
+
+  const debounceFetchMore = useMemo(() => debounce(handleFetchMore, 300), [handleFetchMore]);
+
+  const itemSeparatorComponent = useCallback(() => <View style={styles.itemSeparator} />, []);
 
   return (
     <HomeLayoutProps
@@ -39,24 +50,37 @@ export default function Home() {
         </View>
       }
     >
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      {loading && <ActivityIndicator size="small" color="#0000ff" />}
 
-      {!loading && listings && (
-        <FlatList
-          ref={flatListRef}
-          data={listings}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <ListingCard
-              listing={item}
-              selected={selectedListing?._id === item._id}
-              onPress={() => setSelectedListing(item._id)}
-            />
-          )}
-          onEndReached={loadMore}
-          onEndReachedThreshold={0.4}
-        />
-      )}
+      <FlatList
+        ref={flatListRef}
+        data={listings}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <ListingCard
+            listing={item}
+            selected={selectedListing?._id === item._id}
+            onPress={() => setSelectedListing(item._id)}
+          />
+        )}
+        ItemSeparatorComponent={itemSeparatorComponent}
+        onEndReached={debounceFetchMore}
+        onEndReachedThreshold={0.5}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={15}
+        removeClippedSubviews={true}
+      />
+
+      {loadingMore && <ActivityIndicator size="small" color="#0000ff" />}
     </HomeLayoutProps>
   );
 }
+
+const styles = StyleSheet.create({
+  itemSeparator: {
+    height: 1,
+    backgroundColor: '#E4E4E4',
+    marginVertical: 14,
+  },
+});

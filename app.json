@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.lockhop.myapp",
       "config": {
-        "googleMapsApiKey": "AIzaSyDTKdXLIYtio7PPWfugYQfiQiBol4ax4ks"
+        "googleMapsApiKey": "GOOGLE_MAPS_API_KEY"
       }
     },
     "android": {
@@ -33,14 +33,6 @@
     "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "9b553b41-02c4-4e80-8d20-5be85112cb2d"
-      }
     }
   }
 }
